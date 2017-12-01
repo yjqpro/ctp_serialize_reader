@@ -22,6 +22,7 @@ def json_to_df(path):
         datas['qty'] = []
         datas['remark'] = []
         order_sys_id_map = {}
+        order_oc_map = {}
         for i in data:
             if i.__contains__(u'OrderField'):
                 datas['datetime'].append(datetime.fromtimestamp(i[u'OrderField']['TimeStamp'] / 1000.0 / 1000.0 / 1000.0))
@@ -30,6 +31,7 @@ def json_to_df(path):
                                           ctp_field[u'OrderRef'])
                 if not order_sys_id_map.__contains__(order_id) and  len(ctp_field[u'OrderSysID']) != 0:
                     order_sys_id_map[ctp_field[u'OrderSysID']] = order_id
+                    order_oc_map[ctp_field[u'OrderSysID']] = ctp_field[u'CombOffsetFlag']
                 datas['order_id'].append(order_id)
                 datas['oc'].append(ctp_field[u'CombOffsetFlag'])
                 datas['bs'].append(ctp_field[u'Direction'])
@@ -45,7 +47,7 @@ def json_to_df(path):
                 else:
                     datas['order_id'].append('-1')
 
-                datas['oc'].append('-1')
+                datas['oc'].append(order_oc_map[ctp_field[u'OrderSysID']])
                 datas['bs'].append(ctp_field[u'Direction'])
                 datas['price'].append(ctp_field[u'Price'])
                 datas['qty'].append(ctp_field[u'Volume'])
