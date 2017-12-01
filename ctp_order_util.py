@@ -16,6 +16,7 @@ def json_to_df(path):
         datas = {}
         datas['datetime'] = []
         datas['order_id'] = []
+        datas['instrument'] = []
         datas['oc'] = []
         datas['bs'] = []
         datas['price'] = []
@@ -24,7 +25,7 @@ def json_to_df(path):
         order_sys_id_map = {}
         order_oc_map = {}
         for i in data:
-            if i.__contains__(u'OrderField'):
+            if u'OrderField' in i:
                 datas['datetime'].append(datetime.fromtimestamp(i[u'OrderField']['TimeStamp'] / 1000.0 / 1000.0 / 1000.0))
                 ctp_field = i[u'OrderField'][u'CThostFtdcOrderField']
                 order_id = u'%s:%s:%s' % (ctp_field[u'FrontID'] ,  ctp_field[u'SessionID'] ,
@@ -32,13 +33,14 @@ def json_to_df(path):
                 if not order_sys_id_map.__contains__(order_id) and  len(ctp_field[u'OrderSysID']) != 0:
                     order_sys_id_map[ctp_field[u'OrderSysID']] = order_id
                     order_oc_map[ctp_field[u'OrderSysID']] = ctp_field[u'CombOffsetFlag']
+                datas['instrument'].append(ctp_field[u'InstrumentID'])
                 datas['order_id'].append(order_id)
                 datas['oc'].append(ctp_field[u'CombOffsetFlag'])
                 datas['bs'].append(ctp_field[u'Direction'])
                 datas['price'].append(ctp_field[u'LimitPrice'])
                 datas['qty'].append(ctp_field[u'VolumeTotal'])
                 datas['remark'].append(ctp_field[u'StatusMsg'])
-            elif i.__contains__(u'TradeField'):
+            elif u'TradeField' in i:
                 datas['datetime'].append(datetime.fromtimestamp(i[u'TradeField']['TimeStamp'] / 1000.0 / 1000.0 / 1000.0))
                 ctp_field = i[u'TradeField'][u'CThostFtdcTradeField']
 
@@ -46,7 +48,7 @@ def json_to_df(path):
                     datas['order_id'].append(order_sys_id_map[ctp_field[u'OrderSysID']])
                 else:
                     datas['order_id'].append('-1')
-
+                datas['instrument'].append(ctp_field[u'InstrumentID'])
                 datas['oc'].append(order_oc_map[ctp_field[u'OrderSysID']])
                 datas['bs'].append(ctp_field[u'Direction'])
                 datas['price'].append(ctp_field[u'Price'])
