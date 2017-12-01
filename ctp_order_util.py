@@ -23,12 +23,12 @@ def json_to_df(path):
         datas['remark'] = []
         order_sys_id_map = {}
         for i in data:
-            if i.has_key(u'OrderField'):
+            if i.__contains__(u'OrderField'):
                 datas['datetime'].append(datetime.fromtimestamp(i[u'OrderField']['TimeStamp'] / 1000.0 / 1000.0 / 1000.0))
                 ctp_field = i[u'OrderField'][u'CThostFtdcOrderField']
                 order_id = u'%s:%s:%s' % (ctp_field[u'FrontID'] ,  ctp_field[u'SessionID'] ,
                                           ctp_field[u'OrderRef'])
-                if not order_sys_id_map.has_key(order_id) and  len(ctp_field[u'OrderSysID']) <> 0:
+                if not order_sys_id_map.__contains__(order_id) and  len(ctp_field[u'OrderSysID']) != 0:
                     order_sys_id_map[ctp_field[u'OrderSysID']] = order_id
                 datas['order_id'].append(order_id)
                 datas['oc'].append(ctp_field[u'CombOffsetFlag'])
@@ -36,11 +36,11 @@ def json_to_df(path):
                 datas['price'].append(ctp_field[u'LimitPrice'])
                 datas['qty'].append(ctp_field[u'VolumeTotal'])
                 datas['remark'].append(ctp_field[u'StatusMsg'])
-            elif i.has_key(u'TradeField'):
+            elif i.__contains__(u'TradeField'):
                 datas['datetime'].append(datetime.fromtimestamp(i[u'TradeField']['TimeStamp'] / 1000.0 / 1000.0 / 1000.0))
                 ctp_field = i[u'TradeField'][u'CThostFtdcTradeField']
 
-                if order_sys_id_map.has_key(ctp_field[u'OrderSysID']):
+                if order_sys_id_map.__contains__(ctp_field[u'OrderSysID']):
                     datas['order_id'].append(order_sys_id_map[ctp_field[u'OrderSysID']])
                 else:
                     datas['order_id'].append('-1')
@@ -51,12 +51,12 @@ def json_to_df(path):
                 datas['qty'].append(ctp_field[u'Volume'])
                 datas['remark'].append(u'**成交**')
             else:
-                print "Skip"
+                print("Skip")
     return pd.DataFrame(datas)
 
 def main():
     for f in os.listdir(sys.argv[1] + '/'):
-        if f.find('json') <> -1:
+        if f.find('json') != -1:
             continue
         subprocess.call(['ctp_serialize_reader.exe', os.path.join(sys.argv[1], f)])
     for f in os.listdir(sys.argv[1] + '/'):
