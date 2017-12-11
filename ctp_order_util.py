@@ -62,7 +62,7 @@ def main():
     for f in os.listdir(sys.argv[1] + '/'):
         if f.find('json') != -1:
             continue
-        subprocess.call(['ctp_serialize_reader.exe', os.path.join(sys.argv[1], f)])
+        subprocess.call(['ctp_serialize_reader.exe', os.path.join(sys.argv[1], f), '-ctp'])
     for f in os.listdir(sys.argv[1] + '/'):
         if f.find('json') == -1:
             continue
